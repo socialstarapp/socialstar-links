@@ -166,6 +166,7 @@
             height: 100%;
             background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
             transition: left 0.5s ease;
+            pointer-events: none; /* Prevent interaction issues */
         }
         
         .button:hover::before {
@@ -388,9 +389,22 @@
             
             // Simulate download time
             setTimeout(function() {
+                // Update step 1 indicator
                 document.getElementById('step1').innerHTML = '✓';
                 document.getElementById('step1').classList.add('complete');
-                document.getElementById('download-btn').innerHTML = 'Downloaded ✓';
+                
+                // Change download button to secondary style and update text
+                const downloadBtn = document.getElementById('download-btn');
+                downloadBtn.innerHTML = 'Downloaded ✓';
+                downloadBtn.classList.remove('button');
+                downloadBtn.classList.add('button', 'secondary');
+                
+                // Remove badge from step 1
+                const step1Badge = downloadBtn.parentElement.querySelector('.badge');
+                if (step1Badge) {
+                    step1Badge.style.display = 'none';
+                }
+                
                 document.getElementById('loading-text').classList.remove('show');
                 enableOpenButton();
                 
@@ -401,7 +415,9 @@
         
         function enableOpenButton() {
             const openBtn = document.getElementById('open-app');
-            openBtn.classList.remove('disabled');
+            
+            // Change from secondary disabled to primary (pink) button
+            openBtn.classList.remove('secondary', 'disabled');
             openBtn.disabled = false;
             document.getElementById('open-text').textContent = 'Open in SocialStar';
             document.getElementById('step2-badge').style.display = 'block';
@@ -411,6 +427,18 @@
             if (step1.innerHTML !== '✓') {
                 step1.innerHTML = '✓';
                 step1.classList.add('complete');
+                
+                // Update download button appearance
+                const downloadBtn = document.getElementById('download-btn');
+                downloadBtn.innerHTML = 'Downloaded ✓';
+                downloadBtn.classList.remove('button');
+                downloadBtn.classList.add('button', 'secondary');
+                
+                // Hide step 1 badge
+                const step1Badge = downloadBtn.parentElement.querySelector('.badge');
+                if (step1Badge) {
+                    step1Badge.style.display = 'none';
+                }
             }
         }
         
