@@ -10,14 +10,16 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
             background-color: #10183C;
             color: white;
-            text-align: center;
+            padding: 20px;
         }
         .container {
-            padding: 20px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
         }
         .logo {
             font-size: 48px;
@@ -25,32 +27,148 @@
         }
         h1 {
             font-size: 24px;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 30px;
+        }
+        .steps {
+            background-color: #1A2245;
+            border-radius: 20px;
+            padding: 30px;
             margin-bottom: 20px;
+        }
+        .step {
+            margin-bottom: 25px;
+            text-align: left;
+        }
+        .step:last-child {
+            margin-bottom: 0;
+        }
+        .step-number {
+            display: inline-flex;
+            width: 30px;
+            height: 30px;
+            background-color: #FF4081;
+            color: white;
+            border-radius: 50%;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+            font-size: 16px;
+        }
+        .step-content {
+            display: inline-block;
+            vertical-align: middle;
+            width: calc(100% - 50px);
+        }
+        .step-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 16px;
+        }
+        .step-description {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 15px;
         }
         .button {
             display: inline-block;
-            padding: 12px 24px;
+            padding: 12px 28px;
             background-color: #FF4081;
             color: white;
             text-decoration: none;
             border-radius: 25px;
             font-weight: bold;
-            margin: 10px;
+            font-size: 16;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 64, 129, 0.3);
         }
         .secondary {
-            background-color: #1A2245;
+            background-color: #2A3255;
+            margin-top: 10px;
+        }
+        .secondary:hover {
+            background-color: #3A4265;
+        }
+        .disabled {
+            background-color: #555;
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .disabled:hover {
+            transform: none;
+            box-shadow: none;
+        }
+        .checkmark {
+            color: #4CAF50;
+            margin-left: 5px;
+        }
+        .already-have {
+            margin-top: 20px;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        .skip-link {
+            color: #FF4081;
+            text-decoration: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .skip-link:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="logo">⭐</div>
-        <h1>Opening SocialStar...</h1>
-        <p>You're being redirected to the competition</p>
+        <h1>Join Competition</h1>
+        <p class="subtitle">Follow these steps to join your friends</p>
         
-        <a href="#" id="open-app" class="button">Open in App</a>
-        <br>
-        <a href="https://apps.apple.com/app/socialstar-social-competition/id6473705189" class="button secondary">Download App</a>
+        <div class="steps">
+            <div class="step">
+                <span class="step-number">1</span>
+                <div class="step-content">
+                    <div class="step-title">Download SocialStar</div>
+                    <div class="step-description">Get the app to start competing</div>
+                    <a href="https://apps.apple.com/app/socialstar-social-competition/id6473705189" 
+                       class="button" 
+                       id="download-btn"
+                       onclick="markDownloaded()">
+                        Download from App Store
+                    </a>
+                </div>
+            </div>
+            
+            <div class="step">
+                <span class="step-number">2</span>
+                <div class="step-content">
+                    <div class="step-title">Open the Competition</div>
+                    <div class="step-description">Come back here after installing</div>
+                    <a href="#" 
+                       class="button secondary disabled" 
+                       id="open-app">
+                        Open in SocialStar
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="already-have">
+            Already have the app? 
+            <a class="skip-link" onclick="skipToOpen()">Skip to step 2</a>
+        </div>
     </div>
 
     <script>
@@ -62,7 +180,6 @@
         if (path.includes('/join/')) {
             competitionId = path.split('/join/')[1];
         } else {
-            // Fallback for direct competition IDs
             competitionId = path.replace('/', '');
         }
         
@@ -73,20 +190,42 @@
             // Update the button with the correct deep link
             const appLink = `socialstar://competition/${competitionId}`;
             document.getElementById('open-app').href = appLink;
-            
-            // Try to open the app automatically
-            window.location.href = appLink;
-            
-            // If the user is still here after 2 seconds, they probably don't have the app
-            setTimeout(() => {
-                document.querySelector('h1').textContent = 'Get SocialStar to join this competition';
-                document.querySelector('p').textContent = 'Download the app to participate';
-            }, 2000);
         } else {
-            // No competition ID found
+            // Invalid link
             document.querySelector('h1').textContent = 'Invalid Competition Link';
-            document.querySelector('p').textContent = 'Please check the link and try again';
-            document.getElementById('open-app').style.display = 'none';
+            document.querySelector('.subtitle').textContent = 'Please check the link and try again';
+            document.querySelector('.steps').style.display = 'none';
+            document.querySelector('.already-have').style.display = 'none';
+        }
+        
+        // Check if user has already clicked download
+        if (localStorage.getItem('socialstar_downloaded') === 'true') {
+            enableOpenButton();
+        }
+        
+        function markDownloaded() {
+            localStorage.setItem('socialstar_downloaded', 'true');
+            setTimeout(() => {
+                enableOpenButton();
+                // Update step 1 to show completed
+                document.querySelector('.step-number').innerHTML = '✓';
+                document.querySelector('.step-number').style.backgroundColor = '#4CAF50';
+            }, 1000);
+        }
+        
+        function enableOpenButton() {
+            const openBtn = document.getElementById('open-app');
+            openBtn.classList.remove('disabled');
+            openBtn.style.backgroundColor = '#FF4081';
+            openBtn.style.opacity = '1';
+            openBtn.style.cursor = 'pointer';
+        }
+        
+        function skipToOpen() {
+            enableOpenButton();
+            document.querySelector('.step-number').innerHTML = '✓';
+            document.querySelector('.step-number').style.backgroundColor = '#4CAF50';
+            document.getElementById('open-app').scrollIntoView({ behavior: 'smooth' });
         }
     </script>
 </body>
