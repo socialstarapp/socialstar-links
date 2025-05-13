@@ -3,130 +3,299 @@
 <head>
     <meta charset="UTF-8">
     <title>SocialStar - Join Competition</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
             background-color: #10183C;
             color: white;
-            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
+        
         .container {
-            max-width: 400px;
             width: 100%;
+            max-width: 440px;
+            padding: 24px;
             text-align: center;
         }
+        
         .logo {
-            font-size: 48px;
-            margin-bottom: 20px;
+            font-size: 64px;
+            margin-bottom: 24px;
+            animation: pulse 2s ease-in-out infinite;
         }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
         h1 {
-            font-size: 24px;
-            margin-bottom: 10px;
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
         }
+        
         .subtitle {
-            font-size: 16px;
-            color: rgba(255, 255, 255, 0.8);
-            margin-bottom: 30px;
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.85);
+            margin-bottom: 36px;
+            line-height: 1.4;
         }
+        
         .steps {
-            background-color: #1A2245;
-            border-radius: 20px;
-            padding: 30px;
-            margin-bottom: 20px;
+            background: linear-gradient(145deg, #1E2951, #161D3F);
+            border-radius: 24px;
+            padding: 32px 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         }
+        
         .step {
-            margin-bottom: 25px;
-            text-align: left;
+            margin-bottom: 32px;
+            position: relative;
         }
+        
         .step:last-child {
             margin-bottom: 0;
         }
+        
+        .step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            left: 43px;
+            top: 60px;
+            width: 2px;
+            height: 40px;
+            background-color: rgba(255, 255, 255, 0.1);
+            z-index: 0;
+        }
+        
+        .step-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
         .step-number {
-            display: inline-flex;
-            width: 30px;
-            height: 30px;
+            width: 48px;
+            height: 48px;
             background-color: #FF4081;
             color: white;
             border-radius: 50%;
+            display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: bold;
-            margin-right: 15px;
-            font-size: 16px;
+            font-weight: 800;
+            font-size: 20px;
+            margin-right: 16px;
+            position: relative;
+            z-index: 1;
+            transition: all 0.3s ease;
         }
+        
+        .step-number.complete {
+            background-color: #4CAF50;
+            animation: checkmarkPop 0.5s ease;
+        }
+        
+        @keyframes checkmarkPop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        
         .step-content {
-            display: inline-block;
-            vertical-align: middle;
-            width: calc(100% - 50px);
+            flex: 1;
+            text-align: left;
         }
+        
         .step-title {
-            font-weight: bold;
-            margin-bottom: 5px;
-            font-size: 16px;
+            font-weight: 700;
+            font-size: 20px;
+            margin-bottom: 4px;
         }
+        
         .step-description {
-            font-size: 14px;
-            color: rgba(255, 255, 255, 0.7);
-            margin-bottom: 15px;
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.75);
         }
+        
+        .button-wrapper {
+            position: relative;
+            width: 100%;
+        }
+        
         .button {
-            display: inline-block;
-            padding: 12px 28px;
+            display: block;
+            width: 100%;
+            padding: 16px 32px;
             background-color: #FF4081;
             color: white;
             text-decoration: none;
-            border-radius: 25px;
-            font-weight: bold;
-            font-size: 16;
+            border-radius: 100px;
+            font-weight: 700;
+            font-size: 18px;
             transition: all 0.3s ease;
             border: none;
             cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+        }
+        
+        .button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
             width: 100%;
-            box-sizing: border-box;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
         }
+        
+        .button:hover::before {
+            left: 100%;
+        }
+        
         .button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(255, 64, 129, 0.3);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 64, 129, 0.4);
         }
+        
+        .button:active {
+            transform: translateY(-1px);
+        }
+        
         .secondary {
-            background-color: #2A3255;
-            margin-top: 10px;
+            background-color: #2D3561;
+            position: relative;
         }
+        
         .secondary:hover {
-            background-color: #3A4265;
+            background-color: #3D4571;
+            box-shadow: 0 8px 20px rgba(45, 53, 97, 0.4);
         }
+        
         .disabled {
-            background-color: #555;
-            opacity: 0.5;
+            background-color: #3A3A3A;
             cursor: not-allowed;
+            opacity: 0.6;
         }
+        
         .disabled:hover {
             transform: none;
             box-shadow: none;
         }
-        .checkmark {
-            color: #4CAF50;
-            margin-left: 5px;
+        
+        .disabled::before {
+            display: none;
         }
+        
+        .badge {
+            position: absolute;
+            top: -8px;
+            right: 16px;
+            background-color: #FFC107;
+            color: #000;
+            padding: 4px 12px;
+            border-radius: 100px;
+            font-size: 12px;
+            font-weight: 700;
+            animation: bounce 2s ease-in-out infinite;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            z-index: 10;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
+        }
+        
         .already-have {
-            margin-top: 20px;
-            font-size: 14px;
-            color: rgba(255, 255, 255, 0.7);
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.8);
         }
+        
         .skip-link {
             color: #FF4081;
             text-decoration: none;
-            font-weight: bold;
+            font-weight: 700;
             cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: border-color 0.3s ease;
         }
+        
         .skip-link:hover {
-            text-decoration: underline;
+            border-bottom-color: #FF4081;
+        }
+        
+        .loading {
+            display: none;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 12px;
+        }
+        
+        .loading.show {
+            display: block;
+        }
+        
+        @media (max-width: 428px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 28px;
+            }
+            
+            .subtitle {
+                font-size: 16px;
+            }
+            
+            .steps {
+                padding: 24px 20px;
+            }
+            
+            .step-title {
+                font-size: 18px;
+            }
+            
+            .button {
+                font-size: 16px;
+                padding: 14px 28px;
+            }
+        }
+        
+        @media (max-height: 740px) {
+            .logo {
+                font-size: 48px;
+                margin-bottom: 16px;
+            }
+            
+            .steps {
+                padding: 24px 20px;
+            }
+            
+            .step {
+                margin-bottom: 24px;
+            }
         }
     </style>
 </head>
@@ -134,40 +303,51 @@
     <div class="container">
         <div class="logo">⭐</div>
         <h1>Join Competition</h1>
-        <p class="subtitle">Follow these steps to join your friends</p>
+        <p class="subtitle">Complete both steps to join!</p>
         
         <div class="steps">
             <div class="step">
-                <span class="step-number">1</span>
-                <div class="step-content">
-                    <div class="step-title">Download SocialStar</div>
-                    <div class="step-description">Get the app to start competing</div>
+                <div class="step-header">
+                    <span class="step-number" id="step1">1</span>
+                    <div class="step-content">
+                        <div class="step-title">Get SocialStar</div>
+                        <div class="step-description">Download the app first</div>
+                    </div>
+                </div>
+                <div class="button-wrapper">
                     <a href="https://apps.apple.com/app/socialstar-social-competition/id6473705189" 
                        class="button" 
                        id="download-btn"
-                       onclick="markDownloaded()">
-                        Download from App Store
+                       onclick="markDownloaded(event)">
+                        Download App
                     </a>
+                    <span class="badge">Step 1</span>
                 </div>
             </div>
             
             <div class="step">
-                <span class="step-number">2</span>
-                <div class="step-content">
-                    <div class="step-title">Open the Competition</div>
-                    <div class="step-description">Come back here after installing</div>
-                    <a href="#" 
-                       class="button secondary disabled" 
-                       id="open-app">
-                        Open in SocialStar
-                    </a>
+                <div class="step-header">
+                    <span class="step-number" id="step2">2</span>
+                    <div class="step-content">
+                        <div class="step-title">Open Competition</div>
+                        <div class="step-description">Return here after install</div>
+                    </div>
                 </div>
+                <div class="button-wrapper">
+                    <button class="button secondary disabled" 
+                            id="open-app"
+                            onclick="openInApp(event)">
+                        <span id="open-text">Complete Step 1 First</span>
+                    </button>
+                    <span class="badge" id="step2-badge" style="display: none;">Step 2</span>
+                </div>
+                <div class="loading" id="loading-text">Waiting for app install...</div>
             </div>
         </div>
         
         <div class="already-have">
-            Already have the app? 
-            <a class="skip-link" onclick="skipToOpen()">Skip to step 2</a>
+            Already have SocialStar? 
+            <a class="skip-link" onclick="skipToOpen()">Jump to Step 2 →</a>
         </div>
     </div>
 
@@ -176,56 +356,79 @@
         const path = window.location.pathname;
         let competitionId = '';
         
-        // Check if we're using the /join/ structure
         if (path.includes('/join/')) {
             competitionId = path.split('/join/')[1];
         } else {
-            competitionId = path.replace('/', '');
+            competitionId = path.substring(1); // Remove leading slash
         }
         
-        // Remove any trailing slashes
-        competitionId = competitionId.replace(/\/$/, '');
+        // Clean up the competition ID
+        competitionId = competitionId.replace(/\/$/, '').trim();
         
-        if (competitionId && competitionId !== '404.html') {
-            // Update the button with the correct deep link
-            const appLink = `socialstar://competition/${competitionId}`;
-            document.getElementById('open-app').href = appLink;
+        let appLink = '';
+        if (competitionId && competitionId !== '404.html' && competitionId !== '') {
+            appLink = 'socialstar://competition/' + competitionId;
         } else {
-            // Invalid link
+            // Handle invalid competition ID
             document.querySelector('h1').textContent = 'Invalid Competition Link';
             document.querySelector('.subtitle').textContent = 'Please check the link and try again';
             document.querySelector('.steps').style.display = 'none';
             document.querySelector('.already-have').style.display = 'none';
         }
         
-        // Check if user has already clicked download
+        // Check if already downloaded
         if (localStorage.getItem('socialstar_downloaded') === 'true') {
             enableOpenButton();
         }
         
-        function markDownloaded() {
+        function markDownloaded(event) {
+            // Don't prevent default - let them go to App Store
             localStorage.setItem('socialstar_downloaded', 'true');
-            setTimeout(() => {
+            document.getElementById('loading-text').classList.add('show');
+            
+            // Simulate download time
+            setTimeout(function() {
+                document.getElementById('step1').innerHTML = '✓';
+                document.getElementById('step1').classList.add('complete');
+                document.getElementById('download-btn').innerHTML = 'Downloaded ✓';
+                document.getElementById('loading-text').classList.remove('show');
                 enableOpenButton();
-                // Update step 1 to show completed
-                document.querySelector('.step-number').innerHTML = '✓';
-                document.querySelector('.step-number').style.backgroundColor = '#4CAF50';
-            }, 1000);
+                
+                // Add emphasis animation to step 2
+                document.getElementById('step2').style.animation = 'pulse 1s ease 3';
+            }, 2000);
         }
         
         function enableOpenButton() {
             const openBtn = document.getElementById('open-app');
             openBtn.classList.remove('disabled');
-            openBtn.style.backgroundColor = '#FF4081';
-            openBtn.style.opacity = '1';
-            openBtn.style.cursor = 'pointer';
+            openBtn.disabled = false;
+            document.getElementById('open-text').textContent = 'Open in SocialStar';
+            document.getElementById('step2-badge').style.display = 'block';
+            
+            // Update step 1 if not already done
+            const step1 = document.getElementById('step1');
+            if (step1.innerHTML !== '✓') {
+                step1.innerHTML = '✓';
+                step1.classList.add('complete');
+            }
+        }
+        
+        function openInApp(event) {
+            if (!document.getElementById('open-app').classList.contains('disabled') && appLink) {
+                window.location.href = appLink;
+            }
         }
         
         function skipToOpen() {
             enableOpenButton();
-            document.querySelector('.step-number').innerHTML = '✓';
-            document.querySelector('.step-number').style.backgroundColor = '#4CAF50';
-            document.getElementById('open-app').scrollIntoView({ behavior: 'smooth' });
+            document.getElementById('open-app').scrollIntoView({ 
+                behavior: 'smooth',
+                block: 'center'
+            });
+            
+            // Add emphasis animation
+            document.getElementById('step2').style.animation = 'pulse 1s ease 3';
         }
     </script>
 </body>
