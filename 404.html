@@ -377,14 +377,11 @@
             document.querySelector('.already-have').style.display = 'none';
         }
         
-        // Check if already downloaded
-        if (localStorage.getItem('socialstar_downloaded') === 'true') {
-            enableOpenButton();
-        }
+        // Removed localStorage check
         
         function markDownloaded(event) {
             // Don't prevent default - let them go to App Store
-            localStorage.setItem('socialstar_downloaded', 'true');
+            // Removed localStorage.setItem line
             document.getElementById('loading-text').classList.add('show');
             
             // Simulate download time
