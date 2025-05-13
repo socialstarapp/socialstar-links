@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>SocialStar - Join Competition</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #10183C;
+            color: white;
+            text-align: center;
+        }
+        .container {
+            padding: 20px;
+        }
+        .logo {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .button {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #FF4081;
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            margin: 10px;
+        }
+        .secondary {
+            background-color: #1A2245;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">⭐</div>
+        <h1>Opening SocialStar...</h1>
+        <p>You're being redirected to the competition</p>
+        
+        <a href="#" id="open-app" class="button">Open in App</a>
+        <br>
+        <a href="https://apps.apple.com/app/socialstar-social-competition/id6473705189" class="button secondary">Download App</a>
+    </div>
+
+    <script>
+        // Get the competition ID from the URL
+        const path = window.location.pathname;
+        const parts = path.split('/');
+        const competitionId = parts[parts.length - 1];
+        
+        if (competitionId) {
+            // Update the button with the correct deep link
+            const appLink = `socialstar://competition/${competitionId}`;
+            document.getElementById('open-app').href = appLink;
+            
+            // Try to open the app automatically
+            window.location.href = appLink;
+            
+            // If the user is still here after 2 seconds, they probably don't have the app
+            setTimeout(() => {
+                document.querySelector('h1').textContent = 'Get SocialStar to join this competition';
+                document.querySelector('p').textContent = 'Download the app to participate';
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
