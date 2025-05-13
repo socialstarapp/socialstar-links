@@ -56,8 +56,18 @@
     <script>
         // Get the competition ID from the URL
         const path = window.location.pathname;
-        // Remove the /socialstar-links/ prefix if it exists
-        const competitionId = path.replace('/socialstar-links/', '').replace('/', '');
+        let competitionId = '';
+        
+        // Check if we're using the /join/ structure
+        if (path.includes('/join/')) {
+            competitionId = path.split('/join/')[1];
+        } else {
+            // Fallback for direct competition IDs
+            competitionId = path.replace('/', '');
+        }
+        
+        // Remove any trailing slashes
+        competitionId = competitionId.replace(/\/$/, '');
         
         if (competitionId && competitionId !== '404.html') {
             // Update the button with the correct deep link
