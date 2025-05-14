@@ -61,7 +61,6 @@
             border-radius: 24px;
             padding: 32px 24px;
             margin-bottom: 24px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         }
         
         .question {
@@ -96,7 +95,6 @@
         
         .button:hover {
             transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(255, 64, 129, 0.4);
         }
         
         .button:active {
@@ -109,7 +107,6 @@
         
         .button.secondary:hover {
             background-color: #3D4571;
-            box-shadow: 0 8px 20px rgba(45, 53, 97, 0.4);
         }
         
         .action-section {
@@ -144,7 +141,6 @@
         
         .big-button:hover {
             transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(255, 64, 129, 0.4);
         }
         
         .snapchat-warning {
@@ -268,8 +264,8 @@
         
         <!-- Action for NO -->
         <div class="action-section" id="no-section">
-            <div style="background: linear-gradient(145deg, #1E2951, #161D3F); border-radius: 16px; padding: 24px; margin-bottom: 16px; border: 2px solid rgba(255, 64, 129, 0.3);">
-                <h3 style="font-size: 24px; margin-bottom: 16px; color: #FF4081;">🎯 Two-Step Process</h3>
+            <div style="background: linear-gradient(145deg, #1E2951, #161D3F); border-radius: 24px; padding: 24px; margin-bottom: 24px;">
+                <h3 style="font-size: 24px; margin-bottom: 16px; color: white;">Two-Step Process</h3>
                 
                 <div style="background: rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 16px; margin-bottom: 16px;">
                     <p style="font-size: 20px; margin-bottom: 12px; font-weight: 600;">
@@ -292,21 +288,6 @@
                 </div>
             </div>
             
-            <div style="background: rgba(255, 193, 7, 0.05); border: 1px solid rgba(255, 193, 7, 0.3); border-radius: 12px; padding: 16px; margin-bottom: 20px;">
-                <p style="font-size: 14px; color: #FFC107; text-align: center; font-weight: 600;">
-                    📌 Bookmark this page or keep it open!
-                </p>
-            </div>
-            
-            <div id="countdown-message" style="display: none; background: rgba(76, 175, 80, 0.1); border: 2px solid #4CAF50; border-radius: 12px; padding: 16px; margin-bottom: 20px;">
-                <p style="font-size: 16px; color: #4CAF50; text-align: center; font-weight: 600;">
-                    ✨ Reloading in <span id="countdown">5</span> seconds...
-                </p>
-                <p style="font-size: 14px; color: rgba(255, 255, 255, 0.8); text-align: center; margin-top: 8px;">
-                    Come back after installing the app!
-                </p>
-            </div>
-            
             <a href="#" onclick="startOver()" style="color: #FF4081; text-decoration: none; display: inline-block;">← I already have SocialStar</a>
         </div>
     </div>
@@ -315,10 +296,8 @@
         // Detect if we're in Snapchat's in-app browser
         function isSnapchatBrowser() {
             const ua = navigator.userAgent.toLowerCase();
-            return ua.includes('snapchat') || 
-                   ua.includes('snap') || 
-                   (ua.includes('instagram') && ua.includes('iphone')) ||
-                   (window.innerWidth === 414 && window.innerHeight === 736 && ua.includes('mobile'));
+            // Only detect actual Snapchat browser
+            return ua.includes('snapchat');
         }
         
         // Get the competition ID from the URL
@@ -402,55 +381,10 @@
         }
         
         function handleDownloadClick(event) {
-            // Show countdown message
-            document.getElementById('countdown-message').style.display = 'block';
-            
-            // Start countdown
-            let seconds = 5;
-            const countdownElement = document.getElementById('countdown');
-            
-            const countdownInterval = setInterval(function() {
-                seconds--;
-                countdownElement.textContent = seconds;
-                
-                if (seconds <= 0) {
-                    clearInterval(countdownInterval);
-                    // Go back to initial question
-                    startOver();
-                }
+            // Immediately go back to yes/no screen after 1 second
+            setTimeout(function() {
+                startOver();
             }, 1000);
-            
-            // Store that they initiated download
-            sessionStorage.setItem('download_initiated', 'true');
-            
-            // Don't prevent default - let them go to App Store
-        }
-        
-        // Check on page load if they've initiated download before
-        window.addEventListener('load', function() {
-            if (sessionStorage.getItem('download_initiated') === 'true') {
-                // Clear the flag
-                sessionStorage.removeItem('download_initiated');
-                // Show a special message
-                showReturningUser();
-            }
-        });
-        
-        function showReturningUser() {
-            document.getElementById('initial-question').innerHTML = `
-                <h2 class="question">Welcome back! 👋</h2>
-                <p style="font-size: 16px; margin-bottom: 24px; color: rgba(255, 255, 255, 0.85);">
-                    Did you install SocialStar?
-                </p>
-                <div class="button-group">
-                    <button class="button" onclick="handleYes()">
-                        YES, I installed it
-                    </button>
-                    <button class="button secondary" onclick="handleNo()">
-                        NO, try again
-                    </button>
-                </div>
-            `;
         }
     </script>
 </body>
