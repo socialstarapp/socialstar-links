@@ -433,6 +433,11 @@
             Already have SocialStar? 
             <a class="skip-link" onclick="skipToOpen()">Jump to Step 2 →</a>
         </div>
+        
+        <!-- Add reset link for troubleshooting -->
+        <div style="margin-top: 20px; font-size: 12px; opacity: 0.7;">
+            Having issues? <a style="color: #FF4081; cursor: pointer;" onclick="resetProgress()">Reset steps</a>
+        </div>
     </div>
 
     <script>
@@ -467,15 +472,41 @@
             document.querySelector('.already-have').style.display = 'none';
         }
         
-        // Initialize UI based on browser
+        // Initialize UI based on browser and saved state
         function initializeUI() {
-            // Don't do anything on initial load - wait for step 1 completion
+            // Check if user has already downloaded (persisted across page refreshes)
+            if (localStorage.getItem('socialstar_downloaded') === 'true') {
+                // Immediately show Step 1 as complete
+                document.getElementById('step1').innerHTML = '✓';
+                document.getElementById('step1').classList.add('complete');
+                
+                const downloadBtn = document.getElementById('download-btn');
+                downloadBtn.innerHTML = 'Downloaded ✓';
+                downloadBtn.classList.remove('button');
+                downloadBtn.classList.add('button', 'secondary');
+                
+                const step1Badge = downloadBtn.parentElement.querySelector('.badge');
+                if (step1Badge) {
+                    step1Badge.style.display = 'none';
+                }
+                
+                // Show appropriate Step 2 UI
+                if (isSnapchatBrowser()) {
+                    document.getElementById('normal-step2').style.display = 'none';
+                    document.getElementById('snapchat-step2').classList.add('show');
+                } else {
+                    enableOpenButton();
+                }
+            }
         }
         
         // Call on page load
         initializeUI();
         
         function markDownloaded(event) {
+            // Save state immediately when they click download
+            localStorage.setItem('socialstar_downloaded', 'true');
+            
             // Don't prevent default - let them go to App Store
             document.getElementById('loading-text').classList.add('show');
             
@@ -602,6 +633,11 @@
             }
             
             document.body.removeChild(textarea);
+        }
+        
+        function resetProgress() {
+            localStorage.removeItem('socialstar_downloaded');
+            location.reload();
         }
     </script>
 </body>
