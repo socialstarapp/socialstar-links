@@ -249,6 +249,12 @@
                         <p style="font-size: 16px; color: rgba(255, 255, 255, 0.8);">Follow these steps to open SocialStar</p>
                     </div>
                     
+                    <div style="background: rgba(255, 193, 7, 0.1); border: 2px solid rgba(255, 193, 7, 0.3); border-radius: 16px; padding: 16px; margin-bottom: 20px;">
+                        <p style="font-size: 14px; color: rgba(255, 255, 255, 0.9); text-align: center; margin: 0;">
+                            <strong>Note:</strong> Snapchat blocks direct app opening for security reasons. This extra step is required by Snapchat, not SocialStar.
+                        </p>
+                    </div>
+                    
                     <div style="background: rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 20px; margin-bottom: 20px;">
                         <ol style="text-align: left; margin: 0; padding: 0; list-style: none;">
                             <li style="display: flex; align-items: flex-start; margin-bottom: 16px;">
@@ -259,13 +265,9 @@
                                 <span style="background: #FF4081; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; margin-right: 16px; flex-shrink: 0;">2</span>
                                 <span style="font-size: 16px; color: rgba(255, 255, 255, 0.9);">Open Safari manually</span>
                             </li>
-                            <li style="display: flex; align-items: flex-start; margin-bottom: 16px;">
+                            <li style="display: flex; align-items: flex-start;">
                                 <span style="background: #FF4081; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; margin-right: 16px; flex-shrink: 0;">3</span>
                                 <span style="font-size: 16px; color: rgba(255, 255, 255, 0.9);">Paste the link and go</span>
-                            </li>
-                            <li style="display: flex; align-items: flex-start;">
-                                <span style="background: #4CAF50; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; margin-right: 16px; flex-shrink: 0;">✓</span>
-                                <span style="font-size: 16px; color: rgba(255, 255, 255, 0.9);">Tap "Open Competition"</span>
                             </li>
                         </ol>
                     </div>
@@ -273,10 +275,6 @@
                     <button class="big-button" onclick="copyCurrentLink()">
                         Copy Link to Clipboard
                     </button>
-                    
-                    <p style="text-align: center; font-size: 14px; color: rgba(255, 255, 255, 0.6); margin-top: 16px;">
-                        Snapchat blocks direct app opening for security
-                    </p>
                 </div>
             </div>
             
@@ -408,12 +406,10 @@
                 document.execCommand('copy');
                 
                 const copyBtn = document.querySelector('button[onclick="copyCurrentLink()"]');
-                copyBtn.style.backgroundColor = '#4CAF50';
-                copyBtn.innerHTML = '✅ Link Copied! Now Open Safari';
+                copyBtn.textContent = 'Link Copied';
                 
                 setTimeout(function() {
-                    copyBtn.style.backgroundColor = '#FFC107';
-                    copyBtn.innerHTML = '📋 Copy Link to Clipboard';
+                    copyBtn.textContent = 'Copy Link to Clipboard';
                 }, 3000);
             } catch (err) {
                 console.error('Failed to copy:', err);
