@@ -469,17 +469,14 @@
         
         // Initialize UI based on browser
         function initializeUI() {
-            if (isSnapchatBrowser()) {
-                // Hide normal step 2, show Snapchat version
-                document.getElementById('normal-step2').style.display = 'none';
-                document.getElementById('snapchat-step2').classList.add('show');
-            }
+            // Don't do anything on initial load - wait for step 1 completion
         }
         
         // Call on page load
         initializeUI();
         
         function markDownloaded(event) {
+            // Don't prevent default - let them go to App Store
             document.getElementById('loading-text').classList.add('show');
             
             setTimeout(function() {
@@ -496,7 +493,13 @@
                     step1Badge.style.display = 'none';
                 }
                 
-                if (!isSnapchatBrowser()) {
+                document.getElementById('loading-text').classList.remove('show');
+                
+                // Now show the appropriate Step 2 UI
+                if (isSnapchatBrowser()) {
+                    document.getElementById('normal-step2').style.display = 'none';
+                    document.getElementById('snapchat-step2').classList.add('show');
+                } else {
                     enableOpenButton();
                 }
                 
@@ -541,7 +544,25 @@
         }
         
         function skipToOpen() {
-            if (!isSnapchatBrowser()) {
+            // Mark step 1 as complete first
+            document.getElementById('step1').innerHTML = '✓';
+            document.getElementById('step1').classList.add('complete');
+            
+            const downloadBtn = document.getElementById('download-btn');
+            downloadBtn.innerHTML = 'Downloaded ✓';
+            downloadBtn.classList.remove('button');
+            downloadBtn.classList.add('button', 'secondary');
+            
+            const step1Badge = downloadBtn.parentElement.querySelector('.badge');
+            if (step1Badge) {
+                step1Badge.style.display = 'none';
+            }
+            
+            // Now show the appropriate Step 2 UI
+            if (isSnapchatBrowser()) {
+                document.getElementById('normal-step2').style.display = 'none';
+                document.getElementById('snapchat-step2').classList.add('show');
+            } else {
                 enableOpenButton();
             }
             
