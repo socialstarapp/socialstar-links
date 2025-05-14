@@ -268,25 +268,46 @@
         
         <!-- Action for NO -->
         <div class="action-section" id="no-section">
-            <div style="background: rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 20px; margin-bottom: 20px;">
-                <p style="font-size: 20px; margin-bottom: 16px; font-weight: 600;">📱 Step 1: Download SocialStar</p>
-                <a href="https://apps.apple.com/app/socialstar-social-competition/id6473705189" 
-                   class="big-button">
-                    Download SocialStar
-                </a>
-                <p style="font-size: 16px; margin-top: 16px; color: rgba(255, 255, 255, 0.8);">
-                    ⚠️ Important: After installing, come back to this page!
+            <div style="background: linear-gradient(145deg, #1E2951, #161D3F); border-radius: 16px; padding: 24px; margin-bottom: 16px; border: 2px solid rgba(255, 64, 129, 0.3);">
+                <h3 style="font-size: 24px; margin-bottom: 16px; color: #FF4081;">🎯 Two-Step Process</h3>
+                
+                <div style="background: rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 16px; margin-bottom: 16px;">
+                    <p style="font-size: 20px; margin-bottom: 12px; font-weight: 600;">
+                        <span style="color: #FF4081;">Step 1:</span> Download SocialStar
+                    </p>
+                    <a href="https://apps.apple.com/app/socialstar-social-competition/id6473705189" 
+                       class="big-button"
+                       onclick="handleDownloadClick(event)">
+                        📱 Download App Now
+                    </a>
+                </div>
+                
+                <div style="background: rgba(255, 193, 7, 0.1); border: 2px dashed #FFC107; border-radius: 12px; padding: 16px;">
+                    <p style="font-size: 20px; margin-bottom: 12px; font-weight: 600;">
+                        <span style="color: #FFC107;">Step 2:</span> Come Back Here!
+                    </p>
+                    <p style="font-size: 16px; color: rgba(255, 255, 255, 0.9); line-height: 1.5;">
+                        <strong>⚠️ IMPORTANT:</strong> After installing, you'll need to return to this page and tap "YES" to join the competition
+                    </p>
+                </div>
+            </div>
+            
+            <div style="background: rgba(255, 193, 7, 0.05); border: 1px solid rgba(255, 193, 7, 0.3); border-radius: 12px; padding: 16px; margin-bottom: 20px;">
+                <p style="font-size: 14px; color: #FFC107; text-align: center; font-weight: 600;">
+                    📌 Bookmark this page or keep it open!
                 </p>
             </div>
             
-            <div style="background: rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 20px; opacity: 0.6;">
-                <p style="font-size: 20px; margin-bottom: 12px; font-weight: 600;">🔗 Step 2: Return Here</p>
-                <p style="font-size: 16px; color: rgba(255, 255, 255, 0.8);">
-                    After downloading, come back and tap "YES" to join the competition
+            <div id="countdown-message" style="display: none; background: rgba(76, 175, 80, 0.1); border: 2px solid #4CAF50; border-radius: 12px; padding: 16px; margin-bottom: 20px;">
+                <p style="font-size: 16px; color: #4CAF50; text-align: center; font-weight: 600;">
+                    ✨ Reloading in <span id="countdown">5</span> seconds...
+                </p>
+                <p style="font-size: 14px; color: rgba(255, 255, 255, 0.8); text-align: center; margin-top: 8px;">
+                    Come back after installing the app!
                 </p>
             </div>
             
-            <a href="#" onclick="startOver()" style="color: #FF4081; text-decoration: none; display: inline-block; margin-top: 20px;">← I actually have it</a>
+            <a href="#" onclick="startOver()" style="color: #FF4081; text-decoration: none; display: inline-block;">← I already have SocialStar</a>
         </div>
     </div>
 
@@ -378,6 +399,58 @@
             }
             
             document.body.removeChild(textarea);
+        }
+        
+        function handleDownloadClick(event) {
+            // Show countdown message
+            document.getElementById('countdown-message').style.display = 'block';
+            
+            // Start countdown
+            let seconds = 5;
+            const countdownElement = document.getElementById('countdown');
+            
+            const countdownInterval = setInterval(function() {
+                seconds--;
+                countdownElement.textContent = seconds;
+                
+                if (seconds <= 0) {
+                    clearInterval(countdownInterval);
+                    // Go back to initial question
+                    startOver();
+                }
+            }, 1000);
+            
+            // Store that they initiated download
+            sessionStorage.setItem('download_initiated', 'true');
+            
+            // Don't prevent default - let them go to App Store
+        }
+        
+        // Check on page load if they've initiated download before
+        window.addEventListener('load', function() {
+            if (sessionStorage.getItem('download_initiated') === 'true') {
+                // Clear the flag
+                sessionStorage.removeItem('download_initiated');
+                // Show a special message
+                showReturningUser();
+            }
+        });
+        
+        function showReturningUser() {
+            document.getElementById('initial-question').innerHTML = `
+                <h2 class="question">Welcome back! 👋</h2>
+                <p style="font-size: 16px; margin-bottom: 24px; color: rgba(255, 255, 255, 0.85);">
+                    Did you install SocialStar?
+                </p>
+                <div class="button-group">
+                    <button class="button" onclick="handleYes()">
+                        YES, I installed it
+                    </button>
+                    <button class="button secondary" onclick="handleNo()">
+                        NO, try again
+                    </button>
+                </div>
+            `;
         }
     </script>
 </body>
