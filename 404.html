@@ -257,47 +257,69 @@
             display: block;
         }
         
-        .snapchat-notice {
-            background-color: rgba(255, 193, 7, 0.15);
-            border: 1px solid #FFC107;
-            border-radius: 12px;
-            padding: 16px;
-            margin-top: 20px;
+        .snapchat-step2 {
+            background-color: rgba(255, 193, 7, 0.1);
+            border: 2px solid #FFC107;
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 16px;
             display: none;
         }
         
-        .snapchat-notice.show {
+        .snapchat-step2.show {
             display: block;
         }
         
-        .snapchat-notice p {
-            font-size: 14px;
-            line-height: 1.4;
+        .snapchat-step2 h3 {
+            color: #FFC107;
+            font-size: 18px;
             margin-bottom: 12px;
         }
         
-        .snapchat-notice strong {
-            color: #FFC107;
+        .snapchat-step2 p {
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 16px;
         }
         
-        .copy-button {
+        .snapchat-steps {
+            text-align: left;
+            margin: 16px 0;
+        }
+        
+        .snapchat-steps li {
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .snapchat-steps li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: #FFC107;
+            font-weight: bold;
+        }
+        
+        .copy-button-big {
             background-color: #FFC107;
             color: #000;
             border: none;
-            padding: 10px 20px;
+            padding: 14px 28px;
             border-radius: 50px;
             font-weight: 700;
-            font-size: 14px;
+            font-size: 16px;
             cursor: pointer;
             transition: all 0.3s ease;
+            width: 100%;
         }
         
-        .copy-button:hover {
+        .copy-button-big:hover {
             background-color: #FFD54F;
             transform: translateY(-2px);
         }
         
-        .copy-button.copied {
+        .copy-button-big.copied {
             background-color: #4CAF50;
             color: white;
         }
@@ -379,7 +401,9 @@
                         <div class="step-description">Return here after install</div>
                     </div>
                 </div>
-                <div class="button-wrapper">
+                
+                <!-- Normal button for non-Snapchat browsers -->
+                <div class="button-wrapper" id="normal-step2">
                     <button class="button secondary disabled" 
                             id="open-app"
                             onclick="openInApp(event)">
@@ -387,24 +411,27 @@
                     </button>
                     <span class="badge" id="step2-badge" style="display: none;">Step 2</span>
                 </div>
-                <div class="loading" id="loading-text">Waiting for app install...</div>
+                
+                <!-- Snapchat-specific UI for Step 2 -->
+                <div class="snapchat-step2" id="snapchat-step2">
+                    <h3>⚠️ Snapchat Detected</h3>
+                    <p>Snapchat blocks opening apps. You must use Safari:</p>
+                    <ol class="snapchat-steps">
+                        <li>Copy this page's link</li>
+                        <li>Open Safari browser</li>
+                        <li>Paste the link and go</li>
+                        <li>Tap "Open in SocialStar"</li>
+                    </ol>
+                    <button class="copy-button-big" onclick="copyCurrentLink()">
+                        📋 Copy Link to Clipboard
+                    </button>
+                </div>
             </div>
         </div>
         
         <div class="already-have">
             Already have SocialStar? 
             <a class="skip-link" onclick="skipToOpen()">Jump to Step 2 →</a>
-        </div>
-        
-        <div class="snapchat-notice" id="snapchat-notice">
-            <p><strong>⚠️ Snapchat Browser Detected</strong></p>
-            <p>Snapchat blocks opening apps directly. To join this competition:</p>
-            <ol style="text-align: left; margin: 10px 0;">
-                <li>Copy this link</li>
-                <li>Open Safari</li>
-                <li>Paste & go</li>
-            </ol>
-            <button class="copy-button" id="copy-link" onclick="copyCurrentLink()">Copy Link</button>
         </div>
     </div>
 
@@ -414,8 +441,8 @@
             const ua = navigator.userAgent.toLowerCase();
             return ua.includes('snapchat') || 
                    ua.includes('snap') || 
-                   (ua.includes('instagram') && ua.includes('iphone')) || // Sometimes Snap masquerades
-                   (window.innerWidth === 414 && window.innerHeight === 736 && ua.includes('mobile')); // Common Snap viewport
+                   (ua.includes('instagram') && ua.includes('iphone')) ||
+                   (window.innerWidth === 414 && window.innerHeight === 736 && ua.includes('mobile'));
         }
         
         // Get the competition ID from the URL
@@ -440,10 +467,17 @@
             document.querySelector('.already-have').style.display = 'none';
         }
         
-        // Show Snapchat notice if detected
-        if (isSnapchatBrowser()) {
-            document.getElementById('snapchat-notice').classList.add('show');
+        // Initialize UI based on browser
+        function initializeUI() {
+            if (isSnapchatBrowser()) {
+                // Hide normal step 2, show Snapchat version
+                document.getElementById('normal-step2').style.display = 'none';
+                document.getElementById('snapchat-step2').classList.add('show');
+            }
         }
+        
+        // Call on page load
+        initializeUI();
         
         function markDownloaded(event) {
             document.getElementById('loading-text').classList.add('show');
@@ -462,14 +496,20 @@
                     step1Badge.style.display = 'none';
                 }
                 
-                document.getElementById('loading-text').classList.remove('show');
-                enableOpenButton();
+                if (!isSnapchatBrowser()) {
+                    enableOpenButton();
+                }
                 
                 document.getElementById('step2').style.animation = 'pulse 1s ease 3';
             }, 2000);
         }
         
         function enableOpenButton() {
+            if (isSnapchatBrowser()) {
+                // For Snapchat, keep showing the special instructions
+                return;
+            }
+            
             const openBtn = document.getElementById('open-app');
             
             openBtn.classList.remove('secondary', 'disabled');
@@ -496,36 +536,16 @@
         
         function openInApp(event) {
             if (!document.getElementById('open-app').classList.contains('disabled') && appLink) {
-                // For Snapchat, immediately show the copy link UI
-                if (isSnapchatBrowser()) {
-                    // Show a more prominent message
-                    const openBtn = document.getElementById('open-app');
-                    openBtn.textContent = 'Copy Link & Open Safari';
-                    openBtn.style.backgroundColor = '#FFC107';
-                    openBtn.style.color = '#000';
-                    
-                    // Copy the link when they tap
-                    copyCurrentLink();
-                    
-                    // Update the notice
-                    const notice = document.getElementById('snapchat-notice');
-                    notice.innerHTML = '<p><strong>Link copied!</strong> Snapchat blocks app opening. Please:</p>' +
-                                      '<ol style="text-align: left; margin: 10px 0;">' +
-                                      '<li>Open Safari</li>' +
-                                      '<li>Paste the link</li>' +
-                                      '<li>Open SocialStar from there</li>' +
-                                      '</ol>' +
-                                      '<button class="copy-button" onclick="copyCurrentLink()">Copy Link Again</button>';
-                } else {
-                    // Normal browsers
-                    window.location.href = appLink;
-                }
+                window.location.href = appLink;
             }
         }
         
         function skipToOpen() {
-            enableOpenButton();
-            document.getElementById('open-app').scrollIntoView({ 
+            if (!isSnapchatBrowser()) {
+                enableOpenButton();
+            }
+            
+            document.getElementById('step2').scrollIntoView({ 
                 behavior: 'smooth',
                 block: 'center'
             });
@@ -536,35 +556,30 @@
         function copyCurrentLink() {
             const currentUrl = window.location.href;
             
-            // Create a temporary textarea to copy from
             const textarea = document.createElement('textarea');
             textarea.value = currentUrl;
             textarea.style.position = 'fixed';
             textarea.style.opacity = '0';
             document.body.appendChild(textarea);
             
-            // Select and copy
             textarea.select();
-            textarea.setSelectionRange(0, 99999); // For mobile devices
+            textarea.setSelectionRange(0, 99999);
             
             try {
                 document.execCommand('copy');
                 
-                // Update button to show success
-                const copyBtn = document.getElementById('copy-link');
+                const copyBtn = document.querySelector('.copy-button-big');
                 copyBtn.classList.add('copied');
-                copyBtn.textContent = 'Link Copied! Open Safari';
+                copyBtn.innerHTML = '✅ Link Copied! Now Open Safari';
                 
-                // Reset after 3 seconds
                 setTimeout(function() {
                     copyBtn.classList.remove('copied');
-                    copyBtn.textContent = 'Copy Link';
+                    copyBtn.innerHTML = '📋 Copy Link to Clipboard';
                 }, 3000);
             } catch (err) {
                 console.error('Failed to copy:', err);
             }
             
-            // Clean up
             document.body.removeChild(textarea);
         }
     </script>
