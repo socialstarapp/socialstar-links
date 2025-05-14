@@ -256,8 +256,11 @@
             <div id="normal-open" style="display: block;">
                 <p style="margin-bottom: 20px; font-size: 18px;">Great! Let's open your competition:</p>
                 <button class="big-button" onclick="openInApp()">
-                    Open Competition
+                    🚀 Open Competition
                 </button>
+                <p style="font-size: 14px; color: rgba(255, 255, 255, 0.7); margin-top: 16px;">
+                    This will open SocialStar with your competition
+                </p>
             </div>
             
             <a href="#" onclick="startOver()" style="color: #FF4081; text-decoration: none;">← Changed your mind?</a>
@@ -265,12 +268,25 @@
         
         <!-- Action for NO -->
         <div class="action-section" id="no-section">
-            <p style="margin-bottom: 20px; font-size: 18px;">Download SocialStar to join the competition!</p>
-            <a href="https://apps.apple.com/app/socialstar-social-competition/id6473705189" 
-               class="big-button">
-                Download SocialStar
-            </a>
-            <a href="#" onclick="startOver()" style="color: #FF4081; text-decoration: none;">← I actually have it</a>
+            <div style="background: rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 20px; margin-bottom: 20px;">
+                <p style="font-size: 20px; margin-bottom: 16px; font-weight: 600;">📱 Step 1: Download SocialStar</p>
+                <a href="https://apps.apple.com/app/socialstar-social-competition/id6473705189" 
+                   class="big-button">
+                    Download SocialStar
+                </a>
+                <p style="font-size: 16px; margin-top: 16px; color: rgba(255, 255, 255, 0.8);">
+                    ⚠️ Important: After installing, come back to this page!
+                </p>
+            </div>
+            
+            <div style="background: rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 20px; opacity: 0.6;">
+                <p style="font-size: 20px; margin-bottom: 12px; font-weight: 600;">🔗 Step 2: Return Here</p>
+                <p style="font-size: 16px; color: rgba(255, 255, 255, 0.8);">
+                    After downloading, come back and tap "YES" to join the competition
+                </p>
+            </div>
+            
+            <a href="#" onclick="startOver()" style="color: #FF4081; text-decoration: none; display: inline-block; margin-top: 20px;">← I actually have it</a>
         </div>
     </div>
 
@@ -349,7 +365,7 @@
             try {
                 document.execCommand('copy');
                 
-                const copyBtn = event.target;
+                const copyBtn = document.querySelector('button[onclick="copyCurrentLink()"]');
                 copyBtn.style.backgroundColor = '#4CAF50';
                 copyBtn.innerHTML = '✅ Link Copied! Now Open Safari';
                 
