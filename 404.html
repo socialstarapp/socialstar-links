@@ -166,7 +166,7 @@
             height: 100%;
             background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
             transition: left 0.5s ease;
-            pointer-events: none; /* Prevent interaction issues */
+            pointer-events: none;
         }
         
         .button:hover::before {
@@ -255,6 +255,51 @@
         
         .loading.show {
             display: block;
+        }
+        
+        .snapchat-notice {
+            background-color: rgba(255, 193, 7, 0.15);
+            border: 1px solid #FFC107;
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .snapchat-notice.show {
+            display: block;
+        }
+        
+        .snapchat-notice p {
+            font-size: 14px;
+            line-height: 1.4;
+            margin-bottom: 12px;
+        }
+        
+        .snapchat-notice strong {
+            color: #FFC107;
+        }
+        
+        .copy-button {
+            background-color: #FFC107;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .copy-button:hover {
+            background-color: #FFD54F;
+            transform: translateY(-2px);
+        }
+        
+        .copy-button.copied {
+            background-color: #4CAF50;
+            color: white;
         }
         
         @media (max-width: 428px) {
@@ -350,9 +395,23 @@
             Already have SocialStar? 
             <a class="skip-link" onclick="skipToOpen()">Jump to Step 2 →</a>
         </div>
+        
+        <div class="snapchat-notice" id="snapchat-notice">
+            <p><strong>Snapchat Browser Detected!</strong> For the best experience, tap "..." and select "Open in Safari" or copy the link below:</p>
+            <button class="copy-button" id="copy-link" onclick="copyCurrentLink()">Copy Link</button>
+        </div>
     </div>
 
     <script>
+        // Detect if we're in Snapchat's in-app browser
+        function isSnapchatBrowser() {
+            const ua = navigator.userAgent.toLowerCase();
+            return ua.includes('snapchat') || 
+                   ua.includes('snap') || 
+                   (ua.includes('instagram') && ua.includes('iphone')) || // Sometimes Snap masquerades
+                   (window.innerWidth === 414 && window.innerHeight === 736 && ua.includes('mobile')); // Common Snap viewport
+        }
+        
         // Get the competition ID from the URL
         const path = window.location.pathname;
         let competitionId = '';
@@ -360,43 +419,38 @@
         if (path.includes('/join/')) {
             competitionId = path.split('/join/')[1];
         } else {
-            competitionId = path.substring(1); // Remove leading slash
+            competitionId = path.substring(1);
         }
         
-        // Clean up the competition ID
         competitionId = competitionId.replace(/\/$/, '').trim();
         
         let appLink = '';
         if (competitionId && competitionId !== '404.html' && competitionId !== '') {
             appLink = 'socialstar://competition/' + competitionId;
         } else {
-            // Handle invalid competition ID
             document.querySelector('h1').textContent = 'Invalid Competition Link';
             document.querySelector('.subtitle').textContent = 'Please check the link and try again';
             document.querySelector('.steps').style.display = 'none';
             document.querySelector('.already-have').style.display = 'none';
         }
         
-        // Removed localStorage check
+        // Show Snapchat notice if detected
+        if (isSnapchatBrowser()) {
+            document.getElementById('snapchat-notice').classList.add('show');
+        }
         
         function markDownloaded(event) {
-            // Don't prevent default - let them go to App Store
-            // Removed localStorage.setItem line
             document.getElementById('loading-text').classList.add('show');
             
-            // Simulate download time
             setTimeout(function() {
-                // Update step 1 indicator
                 document.getElementById('step1').innerHTML = '✓';
                 document.getElementById('step1').classList.add('complete');
                 
-                // Change download button to secondary style and update text
                 const downloadBtn = document.getElementById('download-btn');
                 downloadBtn.innerHTML = 'Downloaded ✓';
                 downloadBtn.classList.remove('button');
                 downloadBtn.classList.add('button', 'secondary');
                 
-                // Remove badge from step 1
                 const step1Badge = downloadBtn.parentElement.querySelector('.badge');
                 if (step1Badge) {
                     step1Badge.style.display = 'none';
@@ -405,7 +459,6 @@
                 document.getElementById('loading-text').classList.remove('show');
                 enableOpenButton();
                 
-                // Add emphasis animation to step 2
                 document.getElementById('step2').style.animation = 'pulse 1s ease 3';
             }, 2000);
         }
@@ -413,25 +466,21 @@
         function enableOpenButton() {
             const openBtn = document.getElementById('open-app');
             
-            // Change from secondary disabled to primary (pink) button
             openBtn.classList.remove('secondary', 'disabled');
             openBtn.disabled = false;
             document.getElementById('open-text').textContent = 'Open in SocialStar';
             document.getElementById('step2-badge').style.display = 'block';
             
-            // Update step 1 if not already done
             const step1 = document.getElementById('step1');
             if (step1.innerHTML !== '✓') {
                 step1.innerHTML = '✓';
                 step1.classList.add('complete');
                 
-                // Update download button appearance
                 const downloadBtn = document.getElementById('download-btn');
                 downloadBtn.innerHTML = 'Downloaded ✓';
                 downloadBtn.classList.remove('button');
                 downloadBtn.classList.add('button', 'secondary');
                 
-                // Hide step 1 badge
                 const step1Badge = downloadBtn.parentElement.querySelector('.badge');
                 if (step1Badge) {
                     step1Badge.style.display = 'none';
@@ -441,7 +490,38 @@
         
         function openInApp(event) {
             if (!document.getElementById('open-app').classList.contains('disabled') && appLink) {
-                window.location.href = appLink;
+                // For Snapchat, try multiple methods
+                if (isSnapchatBrowser()) {
+                    // Method 1: Direct location change
+                    window.location.href = appLink;
+                    
+                    // Method 2: Create and click a hidden link
+                    setTimeout(function() {
+                        const link = document.createElement('a');
+                        link.href = appLink;
+                        link.style.display = 'none';
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    }, 100);
+                    
+                    // Method 3: Try window.open as fallback
+                    setTimeout(function() {
+                        window.open(appLink, '_self');
+                    }, 200);
+                    
+                    // Show copy button if nothing works
+                    setTimeout(function() {
+                        const copyBtn = document.getElementById('copy-link');
+                        if (copyBtn && !copyBtn.classList.contains('copied')) {
+                            copyBtn.style.backgroundColor = '#FF4081';
+                            copyBtn.textContent = 'Tap to Copy Link & Open Safari';
+                        }
+                    }, 1000);
+                } else {
+                    // Normal browsers
+                    window.location.href = appLink;
+                }
             }
         }
         
@@ -452,8 +532,42 @@
                 block: 'center'
             });
             
-            // Add emphasis animation
             document.getElementById('step2').style.animation = 'pulse 1s ease 3';
+        }
+        
+        function copyCurrentLink() {
+            const currentUrl = window.location.href;
+            
+            // Create a temporary textarea to copy from
+            const textarea = document.createElement('textarea');
+            textarea.value = currentUrl;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            
+            // Select and copy
+            textarea.select();
+            textarea.setSelectionRange(0, 99999); // For mobile devices
+            
+            try {
+                document.execCommand('copy');
+                
+                // Update button to show success
+                const copyBtn = document.getElementById('copy-link');
+                copyBtn.classList.add('copied');
+                copyBtn.textContent = 'Link Copied! Open Safari';
+                
+                // Reset after 3 seconds
+                setTimeout(function() {
+                    copyBtn.classList.remove('copied');
+                    copyBtn.textContent = 'Copy Link';
+                }, 3000);
+            } catch (err) {
+                console.error('Failed to copy:', err);
+            }
+            
+            // Clean up
+            document.body.removeChild(textarea);
         }
     </script>
 </body>
