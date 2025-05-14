@@ -219,8 +219,10 @@
 <body>
     <div class="container">
         <div class="logo">⭐</div>
-        <h1>Join Competition</h1>
-        <p class="subtitle">You've been invited to compete!</p>
+        <div id="main-header">
+            <h1>Join Competition</h1>
+            <p class="subtitle">You've been invited to compete!</p>
+        </div>
         
         <!-- Initial Question -->
         <div class="question-card" id="initial-question">
@@ -364,6 +366,7 @@
         
         function handleYes() {
             document.getElementById('initial-question').style.display = 'none';
+            document.getElementById('main-header').style.display = 'none';
             document.getElementById('yes-section').classList.add('show');
             
             // Check if we're in Snapchat
@@ -375,6 +378,7 @@
         
         function handleNo() {
             document.getElementById('initial-question').style.display = 'none';
+            document.getElementById('main-header').style.display = 'none';
             document.getElementById('no-section').classList.add('show');
         }
         
@@ -382,6 +386,7 @@
             document.getElementById('yes-section').classList.remove('show');
             document.getElementById('no-section').classList.remove('show');
             document.getElementById('initial-question').style.display = 'block';
+            document.getElementById('main-header').style.display = 'block';
             return false;
         }
         
