@@ -397,7 +397,13 @@
         </div>
         
         <div class="snapchat-notice" id="snapchat-notice">
-            <p><strong>Snapchat Browser Detected!</strong> For the best experience, tap "..." and select "Open in Safari" or copy the link below:</p>
+            <p><strong>⚠️ Snapchat Browser Detected</strong></p>
+            <p>Snapchat blocks opening apps directly. To join this competition:</p>
+            <ol style="text-align: left; margin: 10px 0;">
+                <li>Copy this link</li>
+                <li>Open Safari</li>
+                <li>Paste & go</li>
+            </ol>
             <button class="copy-button" id="copy-link" onclick="copyCurrentLink()">Copy Link</button>
         </div>
     </div>
@@ -490,34 +496,26 @@
         
         function openInApp(event) {
             if (!document.getElementById('open-app').classList.contains('disabled') && appLink) {
-                // For Snapchat, try multiple methods
+                // For Snapchat, immediately show the copy link UI
                 if (isSnapchatBrowser()) {
-                    // Method 1: Direct location change
-                    window.location.href = appLink;
+                    // Show a more prominent message
+                    const openBtn = document.getElementById('open-app');
+                    openBtn.textContent = 'Copy Link & Open Safari';
+                    openBtn.style.backgroundColor = '#FFC107';
+                    openBtn.style.color = '#000';
                     
-                    // Method 2: Create and click a hidden link
-                    setTimeout(function() {
-                        const link = document.createElement('a');
-                        link.href = appLink;
-                        link.style.display = 'none';
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                    }, 100);
+                    // Copy the link when they tap
+                    copyCurrentLink();
                     
-                    // Method 3: Try window.open as fallback
-                    setTimeout(function() {
-                        window.open(appLink, '_self');
-                    }, 200);
-                    
-                    // Show copy button if nothing works
-                    setTimeout(function() {
-                        const copyBtn = document.getElementById('copy-link');
-                        if (copyBtn && !copyBtn.classList.contains('copied')) {
-                            copyBtn.style.backgroundColor = '#FF4081';
-                            copyBtn.textContent = 'Tap to Copy Link & Open Safari';
-                        }
-                    }, 1000);
+                    // Update the notice
+                    const notice = document.getElementById('snapchat-notice');
+                    notice.innerHTML = '<p><strong>Link copied!</strong> Snapchat blocks app opening. Please:</p>' +
+                                      '<ol style="text-align: left; margin: 10px 0;">' +
+                                      '<li>Open Safari</li>' +
+                                      '<li>Paste the link</li>' +
+                                      '<li>Open SocialStar from there</li>' +
+                                      '</ol>' +
+                                      '<button class="copy-button" onclick="copyCurrentLink()">Copy Link Again</button>';
                 } else {
                     // Normal browsers
                     window.location.href = appLink;
