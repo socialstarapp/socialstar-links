@@ -259,22 +259,20 @@
                         <ol style="text-align: left; margin: 0; padding: 0; list-style: none;">
                             <li style="display: flex; align-items: center; margin-bottom: 16px;">
                                 <span style="background: #FF4081; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; margin-right: 16px; flex-shrink: 0;">1</span>
-                                <span style="font-size: 16px; color: rgba(255, 255, 255, 0.9); line-height: 28px;">Copy this page's link</span>
-                            </li>
-                            <li style="display: flex; align-items: center; margin-bottom: 16px;">
-                                <span style="background: #FF4081; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; margin-right: 16px; flex-shrink: 0;">2</span>
-                                <span style="font-size: 16px; color: rgba(255, 255, 255, 0.9); line-height: 28px;">Open Safari manually</span>
+                                <span style="font-size: 16px; color: rgba(255, 255, 255, 0.9); line-height: 28px;">Tap the 3 dots in top right corner</span>
                             </li>
                             <li style="display: flex; align-items: center;">
-                                <span style="background: #FF4081; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; margin-right: 16px; flex-shrink: 0;">3</span>
-                                <span style="font-size: 16px; color: rgba(255, 255, 255, 0.9); line-height: 28px;">Paste the link and go</span>
+                                <span style="background: #FF4081; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; margin-right: 16px; flex-shrink: 0;">2</span>
+                                <span style="font-size: 16px; color: rgba(255, 255, 255, 0.9); line-height: 28px;">Select "Open in browser"</span>
                             </li>
                         </ol>
                     </div>
                     
-                    <button class="big-button" onclick="copyCurrentLink()">
-                        Copy Link to Clipboard
-                    </button>
+                    <div style="text-align: center; margin-top: 20px;">
+                        <p style="font-size: 14px; color: rgba(255, 255, 255, 0.6);">
+                            Your browser will then open SocialStar
+                        </p>
+                    </div>
                 </div>
             </div>
             
@@ -388,36 +386,6 @@
             if (appLink) {
                 window.location.href = appLink;
             }
-        }
-        
-        function copyCurrentLink() {
-            const currentUrl = window.location.href;
-            
-            const textarea = document.createElement('textarea');
-            textarea.value = currentUrl;
-            textarea.style.position = 'fixed';
-            textarea.style.opacity = '0';
-            document.body.appendChild(textarea);
-            
-            textarea.select();
-            textarea.setSelectionRange(0, 99999);
-            
-            try {
-                document.execCommand('copy');
-                
-                const copyBtn = document.querySelector('button[onclick="copyCurrentLink()"]');
-                copyBtn.style.backgroundColor = '#4CAF50';
-                copyBtn.textContent = 'Link Copied';
-                
-                setTimeout(function() {
-                    copyBtn.style.backgroundColor = '';
-                    copyBtn.textContent = 'Copy Link to Clipboard';
-                }, 3000);
-            } catch (err) {
-                console.error('Failed to copy:', err);
-            }
-            
-            document.body.removeChild(textarea);
         }
         
         function handleDownloadClick(event) {
