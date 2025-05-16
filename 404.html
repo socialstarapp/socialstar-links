@@ -159,7 +159,6 @@
             font-weight: 700;
             z-index: 1000;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-            animation: pulse 1.5s infinite;
             max-width: 80%; /* Prevent overflow on small screens */
             text-align: right;
         }
@@ -413,10 +412,9 @@
                 // Show the dots reminder
                 document.getElementById('snapchat-dots-reminder').style.display = 'block';
                 
-                // Make the top reminder even more prominent
+                // Make the text slightly larger
                 const reminder = document.getElementById('snapchat-dots-reminder');
-                reminder.style.animation = 'pulse 0.75s infinite';
-                reminder.style.fontSize = '15px'; // Slightly larger
+                reminder.style.fontSize = '15px';
                 
                 // Try to scroll to top
                 try {
