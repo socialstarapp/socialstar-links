@@ -23,29 +23,11 @@
             -moz-osx-font-smoothing: grayscale;
         }
         
-        /* Add this for Snapchat - prevents scrolling */
-        body.snapchat-browser {
-            height: 100vh;
-            overflow: hidden;
-            position: fixed;
-            width: 100%;
-        }
-        
         .container {
             width: 100%;
             max-width: 440px;
             padding: 24px;
             text-align: center;
-        }
-        
-        /* Add this for Snapchat - allows container to scroll instead of body */
-        body.snapchat-browser .container {
-            height: 100vh;
-            overflow-y: auto;
-            position: absolute;
-            top: 0;
-            padding-top: 100px; /* Keep space at top to show Snapchat UI */
-            padding-bottom: 100px; /* Extra padding at bottom */
         }
         
         .logo {
@@ -163,26 +145,35 @@
             transform: translateY(-3px);
         }
         
-        /* Add this for Snapchat - reminder about the dots */
-        .dots-reminder {
+        /* Snapchat dots reminder */
+        .snapchat-dots-reminder {
             display: none;
             position: fixed;
-            top: 16px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: rgba(255, 193, 7, 0.85);
-            color: black;
-            font-weight: 700;
-            padding: 8px 16px;
+            top: 12px;
+            right: 12px;
+            background-color: #FFC107;
+            color: #000;
+            padding: 8px 12px 8px 16px;
             border-radius: 100px;
-            font-size: 12px;
+            font-size: 14px;
+            font-weight: 700;
             z-index: 1000;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
             animation: pulse 1.5s infinite;
+            max-width: 80%; /* Prevent overflow on small screens */
+            text-align: right;
         }
         
-        body.snapchat-browser .dots-reminder {
-            display: block;
+        .dots-icon {
+            display: inline-block;
+            margin-left: 4px;
+            font-size: 18px;
+            animation: bounce 1.5s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
         }
         
         .snapchat-warning {
@@ -257,8 +248,10 @@
     </style>
 </head>
 <body>
-    <!-- Add this for Snapchat users -->
-    <div class="dots-reminder">👆 Tap the 3 dots in top right corner</div>
+    <!-- Top reminder for Snapchat users -->
+    <div class="snapchat-dots-reminder" id="snapchat-dots-reminder" style="display: none;">
+        Tap 3 dots → "Open in browser" <span class="dots-icon">👉</span>
+    </div>
     
     <div class="container">
         <div class="logo">⭐</div>
@@ -378,18 +371,23 @@
             return ua.includes('snapchat');
         }
         
-        // Handle Snapchat browser settings
-        if (isSnapchatBrowser()) {
-            document.body.classList.add('snapchat-browser');
-            
-            // Disable scrolling on body
-            document.body.addEventListener('touchmove', function(e) {
-                // Only allow scrolling within .container
-                if (!e.target.closest('.container')) {
-                    e.preventDefault();
-                }
-            }, { passive: false });
+        // Initialize
+        function init() {
+            // Check if we're in Snapchat
+            if (isSnapchatBrowser()) {
+                // Show the dots reminder for Snapchat users immediately
+                document.getElementById('snapchat-dots-reminder').style.display = 'block';
+                
+                // Set timeout to make it pulse more prominently after 2 seconds
+                setTimeout(function() {
+                    const reminder = document.getElementById('snapchat-dots-reminder');
+                    reminder.style.animation = 'pulse 0.75s infinite';
+                }, 2000);
+            }
         }
+        
+        // Run initialization
+        init();
         
         // Get the competition ID from the URL
         const path = window.location.pathname;
@@ -422,8 +420,16 @@
                 document.getElementById('snapchat-warning').style.display = 'block';
                 document.getElementById('normal-open').style.display = 'none';
                 
-                // Scroll to top to ensure dots are visible
-                window.scrollTo(0, 0);
+                // Make the top reminder even more prominent
+                const reminder = document.getElementById('snapchat-dots-reminder');
+                reminder.style.animation = 'pulse 0.75s infinite';
+                reminder.style.backgroundColor = '#FF9800'; // More attention-grabbing color
+                reminder.style.fontSize = '15px'; // Slightly larger
+                
+                // Try to scroll to top
+                try {
+                    window.scrollTo(0, 0);
+                } catch(e) {}
             }
         }
         
