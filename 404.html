@@ -427,6 +427,9 @@
             document.getElementById('initial-question').style.display = 'none';
             document.getElementById('main-header').style.display = 'none';
             document.getElementById('no-section').classList.add('show');
+            
+            // Hide the reminder if it's visible
+            document.getElementById('snapchat-dots-reminder').style.display = 'none';
         }
         
         function startOver() {
@@ -434,6 +437,10 @@
             document.getElementById('no-section').classList.remove('show');
             document.getElementById('initial-question').style.display = 'block';
             document.getElementById('main-header').style.display = 'block';
+            
+            // Hide the reminder when going back to YES/NO
+            document.getElementById('snapchat-dots-reminder').style.display = 'none';
+            
             return false;
         }
         
