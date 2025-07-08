@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>SocialStar</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: #10183C;
+            color: white;
+            height: 100vh;
+            height: 100dvh; /* Dynamic viewport height for mobile */
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Main Photo Container */
+        .photo-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #10183C;
+        }
+
+        .photo-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .photo-overlay-text {
+            position: absolute;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            width: 80%;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        /* Navigation Bar */
+        .navigation-bar {
+            position: absolute;
+            top: 0;
+            top: env(safe-area-inset-top, 0);
+            left: 0;
+            right: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 10;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            max-width: 250px;
+        }
+
+        .profile-picture {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: #FFF;
+            object-fit: cover;
+        }
+
+        .username {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .theme-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Bottom Sheet */
+        .bottom-sheet {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #1A2245;
+            border-radius: 20px 20px 0 0;
+            z-index: 25;
+            transition: none;
+            will-change: transform;
+            height: 100vh;
+            height: 100dvh;
+            cursor: grab;
+            /* Add safe area padding for notched devices */
+            padding-bottom: env(safe-area-inset-bottom, 0);
+        }
+
+        .bottom-sheet.dragging {
+            cursor: grabbing;
+        }
+
+        .sheet-handle {
+            padding: 15px;
+            cursor: grab;
+        }
+
+        .sheet-handle:active {
+            cursor: grabbing;
+        }
+
+        .handle-bar {
+            width: 40px;
+            height: 5px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 100px;
+            margin: 0 auto;
+        }
+
+        .sheet-content {
+            padding: 0 20px 20px;
+            height: calc(100vh - 80px);
+            height: calc(100dvh - 80px);
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255,255,255,0.2) transparent;
+            /* Account for star footer and safe area */
+            padding-bottom: calc(120px + env(safe-area-inset-bottom, 0));
+        }
+        
+        .sheet-content::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .sheet-content::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        .sheet-content::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.2);
+            border-radius: 3px;
+        }
+
+        .ratings-header {
+            font-size: 16px;
+            font-weight: bold;
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 15px;
+        }
+
+        /* Rating Items */
+        .rating-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .rating-item:last-child {
+            border-bottom: none;
+        }
+
+        .rating-user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+        }
+
+        .rating-profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #4A5568;
+            object-fit: cover;
+        }
+
+        .rating-username {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .rating-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: #DAA520;
+            padding: 5px 10px;
+            border-radius: 20px;
+        }
+
+        .rating-badge .star {
+            width: 18px;
+            height: 18px;
+        }
+
+        .rating-badge span {
+            font-weight: bold;
+        }
+
+        /* Star Rating Footer */
+        .star-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #10183C;
+            padding: 18px 0;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            z-index: 30;
+            height: 100px;
+            /* Add safe area padding for home indicator */
+            padding-bottom: calc(18px + env(safe-area-inset-bottom, 0));
+        }
+
+        .star-footer.voted {
+            background: #A9A9A9;
+        }
+
+        .star-button {
+            background: none;
+            border: none;
+            font-size: 38px;
+            color: white;
+            cursor: pointer;
+            padding: 8px;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .star-button.filled {
+            color: #FFD700;
+        }
+
+        .star-button.voted {
+            color: #c2c2c2;
+            cursor: not-allowed;
+        }
+
+        .star-button.animate {
+            transform: scale(1.3);
+        }
+
+        /* Download Prompt */
+        .download-prompt {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #1A2245;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 90%;
+            width: 350px;
+            z-index: 100;
+        }
+
+        .download-prompt h2 {
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+
+        .download-prompt p {
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        .download-button {
+            background: #DAA520;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .dismiss-button {
+            background: none;
+            color: rgba(255,255,255,0.5);
+            border: none;
+            padding: 10px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 99;
+        }
+
+        /* Additional safe area support for older devices */
+        @supports not (padding: env(safe-area-inset-bottom)) {
+            .star-footer {
+                padding-bottom: 35px; /* Extra padding for older devices */
+            }
+            
+            .sheet-content {
+                padding-bottom: 140px; /* Extra padding for older devices */
+            }
+        }
+
+        /* Responsive adjustments */
+        @media (max-height: 700px) {
+            .star-footer {
+                padding: 20px 0;
+                height: 80px;
+                padding-bottom: calc(15px + env(safe-area-inset-bottom, 0));
+            }
+            .star-button {
+                font-size: 32px;
+            }
+            .sheet-content {
+                padding-bottom: calc(100px + env(safe-area-inset-bottom, 0));
+            }
+        }
+
+        /* Specific adjustments for in-app browsers */
+        @media (max-height: 600px) {
+            .star-footer {
+                padding: 15px 0;
+                height: 70px;
+                padding-bottom: calc(10px + env(safe-area-inset-bottom, 20px));
+            }
+            .star-button {
+                font-size: 28px;
+            }
+            .sheet-content {
+                padding-bottom: calc(90px + env(safe-area-inset-bottom, 20px));
+            }
+        }
+    </style>
+    <script>
+        !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="init Ie Ts Ms Ee Es Rs capture Ge calculateEventProperties Os register register_once register_for_session unregister unregister_for_session js getFeatureFlag getFeatureFlagPayload isFeatureEnabled reloadFeatureFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSurveysLoaded onSessionId getSurveys getActiveMatchingSurveys renderSurvey canRenderSurvey canRenderSurveyAsync identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException loadToolbar get_property getSessionProperty Ds Fs createPersonProfile Ls Ps opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing clear_opt_in_out_capturing Cs debug I As getPageViewId captureTraceFeedback captureTraceMetric".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
+        posthog.init('phc_3sfiHFKqVbrCmXIKdwWx0RPsTwKPd6US1fvKFjhziZm', {
+            api_host: 'https://eu.i.posthog.com',
+            defaults: '2025-05-24',
+            person_profiles: 'identified_only', // or 'always' to create profiles for anonymous users as well
+        })
+    </script>
+</head>
+<body>
+    <!-- Main Photo -->
+    <div class="photo-container">
+        <img class="photo-image" src="https://i.pinimg.com/736x/5b/32/5c/5b325cab82cbc51749dbfa9bc2945bf6.jpg">
+        <div class="photo-overlay-text" style="top: 30%;"> </div>
+    </div>
+
+    <!-- Navigation Bar -->
+    <nav class="navigation-bar">
+        <div class="user-info">
+            <img class="profile-picture" src="https://firebasestorage.googleapis.com/v0/b/pingbear-96b4c.appspot.com/o/demo%2FIMG_3441.JPG?alt=media&token=f6ccc3ab-6400-4206-9821-1783d4beb3f0" alt="Profile">
+            <span class="username">Elsa</span>
+        </div>
+    </nav>
+
+    <!-- Bottom Sheet -->
+    <div class="bottom-sheet" id="bottomSheet">
+        <div class="sheet-handle" id="sheetHandle">
+            <div class="handle-bar"></div>
+        </div>
+        <div class="sheet-content">
+            <div class="ratings-header">Ratings (<span id="ratingCount">6</span>)</div>
+            <div id="ratingsList">
+                <!-- Initial ratings -->
+                <div class="rating-item">
+                    <div class="rating-user-info">
+                        <img class="rating-profile-pic" src="https://firebasestorage.googleapis.com/v0/b/pingbear-96b4c.appspot.com/o/demo%2Fadffff9d5b2b81e935c6d0f601bc7cd1.jpg?alt=media&token=d95d5326-dc11-4d99-84f7-c9404ad48bc4" alt="Sarah">
+                        <span class="rating-username">Alice</span>
+                    </div>
+                    <div class="rating-badge">
+                        <span>5</span>
+                        <svg class="star" viewBox="0 0 24 24" fill="white">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="rating-item">
+                    <div class="rating-user-info">
+                        <img class="rating-profile-pic" src="https://firebasestorage.googleapis.com/v0/b/pingbear-96b4c.appspot.com/o/demo%2F76f9566b1a6c667929d300af2bd1686f.jpg?alt=media&token=11621632-5a38-4dc3-9f10-ff8e1776c603" alt="Mike">
+                        <span class="rating-username">Astrid</span>
+                    </div>
+                    <div class="rating-badge">
+                        <span>4</span>
+                        <svg class="star" viewBox="0 0 24 24" fill="white">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="rating-item">
+                    <div class="rating-user-info">
+                        <img class="rating-profile-pic" src="https://firebasestorage.googleapis.com/v0/b/pingbear-96b4c.appspot.com/o/demo%2F760021cb5694f81ebcc6755ab82458ed.jpg?alt=media&token=3cbeeb12-3493-4848-9e6b-d0a2481237d2" alt="Emma">
+                        <span class="rating-username">Sophia</span>
+                    </div>
+                    <div class="rating-badge">
+                        <span>5</span>
+                        <svg class="star" viewBox="0 0 24 24" fill="white">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="rating-item">
+                    <div class="rating-user-info">
+                        <img class="rating-profile-pic" src="https://firebasestorage.googleapis.com/v0/b/pingbear-96b4c.appspot.com/o/demo%2F5b797f1008cdbd4489a372000d5f6954.jpg?alt=media&token=d792f429-a9be-4021-a3dd-124b4ca45d6c" alt="David">
+                        <span class="rating-username">Emma</span>
+                    </div>
+                    <div class="rating-badge">
+                        <span>3</span>
+                        <svg class="star" viewBox="0 0 24 24" fill="white">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                        </svg>
+                    </div>
+                </div>
+                <!-- Add more ratings to show scrolling -->
+                <div class="rating-item">
+                    <div class="rating-user-info">
+                        <img class="rating-profile-pic" src="https://firebasestorage.googleapis.com/v0/b/pingbear-96b4c.appspot.com/o/demo%2F52c1d2168c708e20d41fa8538fde2307.jpg?alt=media&token=588c51d3-1b05-4ffb-9295-dd7c79433324" alt="Lisa">
+                        <span class="rating-username">Luna</span>
+                    </div>
+                    <div class="rating-badge">
+                        <span>4</span>
+                        <svg class="star" viewBox="0 0 24 24" fill="white">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="rating-item">
+                    <div class="rating-user-info">
+                        <img class="rating-profile-pic" src="https://firebasestorage.googleapis.com/v0/b/pingbear-96b4c.appspot.com/o/demo%2F17b9d70ab76bd8e2daabb99b8e77ad31.jpg?alt=media&token=bd3ea9d3-210c-420f-bf5d-029771faaade" alt="John">
+                        <span class="rating-username">Frida</span>
+                    </div>
+                    <div class="rating-badge">
+                        <span>5</span>
+                        <svg class="star" viewBox="0 0 24 24" fill="white">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Star Rating Footer -->
+    <div class="star-footer" id="starFooter">
+        <button class="star-button" data-rating="1">★</button>
+        <button class="star-button" data-rating="2">★</button>
+        <button class="star-button" data-rating="3">★</button>
+        <button class="star-button" data-rating="4">★</button>
+        <button class="star-button" data-rating="5">★</button>
+    </div>
+
+    <!-- Download Prompt -->
+    <div class="overlay" id="overlay"></div>
+    <div class="download-prompt" id="downloadPrompt">
+        <h2>🎉 Nice Rating!</h2>
+        <p>Love this experience? Download our app to rate photos with your friends and compete in daily challenges!</p>
+        <button class="download-button" onclick="downloadApp()">Download SocialStar</button>
+        <button class="dismiss-button" onclick="dismissPrompt()">Maybe Later</button>
+    </div>
+
+    <script>
+        // State management
+        let currentRating = 0;
+        let hasVoted = false;
+        let isDragging = false;
+        let startY = 0;
+        let currentY = 0;
+        let sheetY = 0;
+        
+        // Get safe area inset for dynamic calculations
+        const safeAreaBottom = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--safe-area-inset-bottom')) || 0;
+        
+        // Sheet positions - updated to account for safe areas
+        const basePadding = 20; // Base padding from safe area
+        const starFooterHeight = 100 + safeAreaBottom; // Height of star footer + safe area
+        const minHeight = starFooterHeight + 50; // Minimum height above star footer
+        const defaultHeight = 220 + safeAreaBottom; // Default height (adjusted for safe area)
+        const midHeight = window.innerHeight * 0.35;
+        const maxHeight = window.innerHeight - 120;
+        let currentDetent = 'default';
+        
+        // Elements
+        const bottomSheet = document.getElementById('bottomSheet');
+        const sheetHandle = document.getElementById('sheetHandle');
+        const starFooter = document.getElementById('starFooter');
+        const starButtons = document.querySelectorAll('.star-button');
+        const ratingsList = document.getElementById('ratingsList');
+        const ratingCount = document.getElementById('ratingCount');
+        const downloadPrompt = document.getElementById('downloadPrompt');
+        const overlay = document.getElementById('overlay');
+        
+        // Initialize sheet position
+        function setSheetPosition(height) {
+            const translateY = window.innerHeight - height;
+            bottomSheet.style.transform = `translateY(${translateY}px)`;
+            sheetY = translateY;
+        }
+        
+        // Set initial position to default height
+        setSheetPosition(defaultHeight);
+        
+        // Add visual indicator for drag state
+        function updateDragVisual(isDragging) {
+            if (isDragging) {
+                bottomSheet.classList.add('dragging');
+            } else {
+                bottomSheet.classList.remove('dragging');
+            }
+        }
+        
+        // Check if touch/click is on scrollable content
+        function isScrollableContent(target) {
+            return target.closest('.sheet-content') && !target.closest('.sheet-handle');
+        }
+        
+        // Touch/Mouse event handlers for bottom sheet
+        function handleStart(e) {
+            // Don't start dragging if touching scrollable content (unless it's the handle)
+            if (isScrollableContent(e.target)) {
+                const sheetContent = e.target.closest('.sheet-content');
+                if (sheetContent.scrollTop > 0) {
+                    return; // Allow scrolling if content is scrolled
+                }
+            }
+            
+            isDragging = true;
+            startY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
+            bottomSheet.style.transition = 'none';
+            updateDragVisual(true);
+        }
+        
+        function handleMove(e) {
+            if (!isDragging) return;
+            
+            e.preventDefault();
+            currentY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
+            const deltaY = currentY - startY;
+            
+            let newY = sheetY + deltaY;
+            const currentHeight = window.innerHeight - newY;
+            
+            // Constrain movement - allow dragging down to minimum height
+            if (currentHeight < minHeight) {
+                newY = window.innerHeight - minHeight;
+            } else if (currentHeight > maxHeight) {
+                newY = window.innerHeight - maxHeight;
+            }
+            
+            bottomSheet.style.transform = `translateY(${newY}px)`;
+        }
+        
+        function handleEnd(e) {
+            if (!isDragging) return;
+            
+            isDragging = false;
+            updateDragVisual(false);
+            bottomSheet.style.transition = 'transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+            
+            const endY = e.type.includes('mouse') ? e.clientY : e.changedTouches[0].clientY;
+            const deltaY = endY - startY;
+            const velocity = deltaY;
+            
+            const currentHeight = window.innerHeight - sheetY;
+            
+            // Determine new position based on current position and gesture
+            let targetHeight;
+            
+            // Updated logic to handle the new default height
+            if (currentHeight <= defaultHeight) {
+                if (deltaY < -50 || velocity < -100) {
+                    targetHeight = midHeight;
+                    currentDetent = 'mid';
+                } else if (deltaY > 30 || velocity > 50) {
+                    targetHeight = minHeight;
+                    currentDetent = 'min';
+                } else {
+                    targetHeight = defaultHeight;
+                    currentDetent = 'default';
+                }
+            } else if (currentHeight <= midHeight) {
+                if (deltaY < -50 || velocity < -100) {
+                    targetHeight = maxHeight;
+                    currentDetent = 'max';
+                } else if (deltaY > 50 || velocity > 100) {
+                    targetHeight = defaultHeight;
+                    currentDetent = 'default';
+                } else {
+                    targetHeight = midHeight;
+                    currentDetent = 'mid';
+                }
+            } else {
+                if (deltaY > 50 || velocity > 100) {
+                    targetHeight = midHeight;
+                    currentDetent = 'mid';
+                } else {
+                    targetHeight = maxHeight;
+                    currentDetent = 'max';
+                }
+            }
+            
+            setSheetPosition(targetHeight);
+        }
+        
+        // Add event listeners for dragging - now on entire sheet
+        bottomSheet.addEventListener('mousedown', handleStart);
+        bottomSheet.addEventListener('touchstart', handleStart, { passive: false });
+        
+        document.addEventListener('mousemove', handleMove);
+        document.addEventListener('touchmove', handleMove, { passive: false });
+        
+        document.addEventListener('mouseup', handleEnd);
+        document.addEventListener('touchend', handleEnd);
+        
+        // Star rating functionality
+        starButtons.forEach((button, index) => {
+            button.addEventListener('click', function() {
+                if (hasVoted) return;
+                
+                const rating = parseInt(button.dataset.rating);
+                currentRating = rating;
+                
+                // Update star colors
+                starButtons.forEach((btn, i) => {
+                    if (i < rating) {
+                        btn.classList.add('filled');
+                        btn.classList.add('animate');
+                        setTimeout(() => btn.classList.remove('animate'), 300);
+                    } else {
+                        btn.classList.remove('filled');
+                    }
+                });
+                
+                // Haptic feedback simulation (vibration if supported)
+                if (navigator.vibrate) {
+                    navigator.vibrate([50, 100, 50]);
+                }
+                
+                // Submit rating after animation
+                setTimeout(() => {
+                    submitRating(rating);
+                }, 500);
+            });
+        });
+        
+        function submitRating(rating) {
+            hasVoted = true;
+            
+            // Update UI to show voted state
+            starFooter.classList.add('voted');
+            starButtons.forEach(btn => btn.classList.add('voted'));
+            
+            // Add new rating to list with animation
+            const newRating = createRatingItem('You', rating, 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png');
+            newRating.style.opacity = '0';
+            newRating.style.transform = 'translateY(20px)';
+            ratingsList.insertBefore(newRating, ratingsList.firstChild);
+            
+            // Animate in
+            setTimeout(() => {
+                newRating.style.transition = 'all 0.3s ease';
+                newRating.style.opacity = '1';
+                newRating.style.transform = 'translateY(0)';
+            }, 10);
+            
+            // Update count
+            const currentCount = parseInt(ratingCount.textContent);
+            ratingCount.textContent = currentCount + 1;
+            
+            // Show download prompt after delay
+            setTimeout(() => {
+                overlay.style.display = 'block';
+                downloadPrompt.style.display = 'block';
+                
+                // Animate in
+                setTimeout(() => {
+                    overlay.style.opacity = '1';
+                    downloadPrompt.style.transform = 'translate(-50%, -50%) scale(1)';
+                }, 10);
+            }, 1500);
+        }
+        
+        function createRatingItem(username, rating, avatarUrl) {
+            const item = document.createElement('div');
+            item.className = 'rating-item';
+            item.innerHTML = `
+                <div class="rating-user-info">
+                    <img class="rating-profile-pic" src="${avatarUrl}" alt="${username}">
+                    <span class="rating-username">${username}</span>
+                </div>
+                <div class="rating-badge">
+                    <span>${rating}</span>
+                    <svg class="star" viewBox="0 0 24 24" fill="white">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                </div>
+            `;
+            return item;
+        }
+        
+        function downloadApp() {
+            // Simulate app download
+            window.open('https://apps.apple.com/app/socialstar-app/id6473705189', '_blank');
+        }
+        
+        function dismissPrompt() {
+            overlay.style.opacity = '0';
+            downloadPrompt.style.transform = 'translate(-50%, -50%) scale(0.9)';
+            
+            setTimeout(() => {
+                overlay.style.display = 'none';
+                downloadPrompt.style.display = 'none';
+            }, 300);
+        }
+        
+        // Add CSS for animations
+        const style = document.createElement('style');
+        style.textContent = `
+            .overlay {
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            }
+            
+            .download-prompt {
+                transform: translate(-50%, -50%) scale(0.9);
+                transition: transform 0.3s ease;
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Prevent scrolling on mobile when dragging
+        document.addEventListener('touchmove', function(e) {
+            if (isDragging) {
+                e.preventDefault();
+                return;
+            }
+            if (e.target.closest('.sheet-content')) return;
+            e.preventDefault();
+        }, { passive: false });
+    </script>
+</body>
+</html>
