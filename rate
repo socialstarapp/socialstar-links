@@ -19,7 +19,7 @@
             background: #10183C;
             color: white;
             height: 100vh;
-            height: 100dvh; /* Dynamic viewport height for mobile */
+            height: 100dvh; /* Dynamic viewport heights for mobile */
             overflow: hidden;
             position: relative;
         }
